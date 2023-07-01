@@ -67,11 +67,16 @@ exports.postUserLogin = async (req, resp) => {
       if (!result) {
         return resp.status(401).json({ error: "Incorrect password" });
       }
-
+      if(result==true){
+       
       resp.status(200).json({ message: "User logged in successfully" });
+      
+      }
     });
   } catch (err) {
     console.log("Error:", err);
     resp.status(500).json({ error: "Internal server error" });
   }
 };
+
+
