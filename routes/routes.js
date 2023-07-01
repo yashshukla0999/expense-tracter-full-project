@@ -4,6 +4,7 @@ const expenseControl = require('../controller/controls')
 
 router.get('/',expenseControl.showForm)
 router.post('/signUp',expenseControl.postUser)
+router.post('/login',expenseControl.postUserLogin)
 
 
 

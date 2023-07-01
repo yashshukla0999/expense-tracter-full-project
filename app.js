@@ -13,6 +13,9 @@ app.use(cors());
 
 
  app.use(expenseRoutes);
+
+
+ 
 sequelize.sync()
 .then((result)=>{
     console.log('database connected');
