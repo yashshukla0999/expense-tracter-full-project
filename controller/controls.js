@@ -1,7 +1,7 @@
 const path = require('path');
-const Expense = require('../models/data');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
-
+const jwt = require('jsonwebtoken')
 
 exports.showForm = (req, resp) => {
 
@@ -21,7 +21,7 @@ exports.postUser = (req, resp) => {
     }
     bcrypt.hash(userPassword, 10, async (err, hash) => {
       console.log(err)
-      await Expense.create({
+      await User.create({
         name: userName,
         email: userEmail,
         password: hash
@@ -42,6 +42,14 @@ exports.postUser = (req, resp) => {
 
 
 
+function generateAccessToken(id){
+  return jwt.sign({userId:id},'efvmrwkvmwemrwemrkmvwrgkbrwgblkrwbrklgmblkrwmbrkmb')
+
+}
+
+
+
+
 
 
 exports.postUserLogin = async (req, resp) => {
@@ -49,7 +57,7 @@ exports.postUserLogin = async (req, resp) => {
   const userPassword = req.body.LoginPassword;
 
   try {
-    const user = await Expense.findOne({
+    const user = await User.findOne({
       where: {
         email: userEmail
       }
@@ -69,7 +77,7 @@ exports.postUserLogin = async (req, resp) => {
       }
       if(result==true){
        
-      resp.status(200).json({ message: "User logged in successfully" });
+      resp.status(200).json({ message: "User logged in successfully" ,token:generateAccessToken(user.id)});
       
       }
     });
@@ -78,5 +86,6 @@ exports.postUserLogin = async (req, resp) => {
     resp.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 

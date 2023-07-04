@@ -1,13 +1,16 @@
 const path =require('path')
-const LoginExpense = require('../models/expense')
+const Expense = require('../models/expense');
+const { where } = require('sequelize');
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 
 
-exports.showForm=(req,resp)=>{
-    resp.sendFile(path.join(__dirname , '../views/afterLogin.html'));
+exports.showForm = (req, resp) => {
 
-}
-exports.postExpense = (req, resp) => {
+    resp.sendFile(path.join(__dirname, '../views/afterLogin.html'));
+  }
+exports.postExpense = async (req, resp) => {
   const userExpense = req.body.expense;
   const userDescription = req.body.description;
   const userCategory = req.body.category;
@@ -16,26 +19,27 @@ exports.postExpense = (req, resp) => {
     // Check if any of the required fields are missing
     return resp.status(400).json({ message: 'Missing required fields' });
   }
-
-  LoginExpense.create({
+try{
+const result= await req.user.createExpense({
     expense: userExpense,
     description: userDescription,
     category: userCategory
   })
-    .then((result) => {
+  
       console.log(result);
-      resp.status(200).json({ message: 'Expense created successfully' });
-    })
-    .catch((err) => {
+      resp.status(200).json({ message: 'Expense created successfully',data:result });
+}
+    catch(err) {
       console.log(err);
       resp.status(500).json({ message: 'Error creating expense' });
-    });
+    };
 };
 
   exports.showUser = (req, resp) => {
-    LoginExpense.findAll()
+   
+    Expense.findAll({where:{userId: req.user.id}})
       .then((users) => {
-        console.log(users);
+       console.log(users);
         resp.status(200).json(users);
       })
       .catch((err) => {
@@ -45,11 +49,12 @@ exports.postExpense = (req, resp) => {
   };
 
   exports.deleteUser = (req, res) => {
-    const userId = req.params.id;
+    const expenseId = req.params.id;
   
-    LoginExpense.destroy({
+    Expense.destroy({
       where: {
-        id: userId
+        id:expenseId,
+        userId:  req.user.id
       }
     })
       .then((deletedUser) => {
@@ -68,7 +73,7 @@ exports.editUser = (req, res) => {
   const userId = req.params.id;
   const { name, email, PhoneNumber } = req.body;
 
-  LoginExpense.findOne({ where: { id: userId } })
+  Expense.findOne({ where: { id: userId } })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });

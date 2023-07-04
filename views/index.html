@@ -172,6 +172,9 @@ try {
  console.log(response);
  if (response.status === 200) {
       alert('User logged in successfully');
+	  window.location.href = "../views/afterLogin.html";
+	localStorage.setItem("token",response.data.token);
+
 
  }
 } 
