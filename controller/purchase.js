@@ -32,7 +32,7 @@ exports.purchasepremium =async (req, res) => {
 
 exports.updateTransactionStatus = async (req, res ) => {
     try {
-        //const userId = req.user.id;
+        const userId = req.user.id;
         //const { payment_id, order_id} = req.body;
         const order_id = req.body.order_id;
     const payment_id = req.body.payment_id;
@@ -41,18 +41,18 @@ exports.updateTransactionStatus = async (req, res ) => {
         const promise2 =  req.user.update({ ispremiumuser: true }) 
 console.log(payment_id+'Zxcvfbghnjm,.')
         Promise.all([promise1, promise2]).then(()=> {
-            return res.status(200).json({sucess: true, message: "Transaction Successful"});
-        }).catch( async (error ) => {
-            console.log(error);
-            await order.update({  paymentid: payment_id,status: "FAILED" });
-            throw new Error(JSON.stringify(error));
+            return res.status(200).json({sucess: true, message: "Transaction Successful",token: userController.generateAccessToken(userId, true) });
+        }).catch( (error ) => {
+            order.update({ paymentid: payment_id,status: "FAILED" });
+            console.log(error)
+            throw new Error(error)
         })
 
         
                 
     } catch (err) {
         console.log(err);
-        //await order.update({  paymentid: payment_id,status: "FAILED" });
+       
         res.status(403).json({ errpr: err, message: 'Sometghing went wrong' })
 
     }

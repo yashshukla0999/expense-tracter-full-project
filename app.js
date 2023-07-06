@@ -9,6 +9,7 @@ const Expense = require("./models/expense");
 const Order = require('./models/order');
 
 const expenseRoutes = require('./routes/routes')
+const premiumRoutes = require('./routes/premium')
 const AfterLoginRoutes = require('./routes/adding-expense')
 const purchaseRoutes = require('./routes/purchase')
 const bodyParser = require("body-parser");
@@ -21,7 +22,7 @@ app.use(bodyParser.json({ extended: false }));
 
 app.use(cors());
 
-
+app.use(premiumRoutes);
  app.use(expenseRoutes);
 
  app.use(AfterLoginRoutes);

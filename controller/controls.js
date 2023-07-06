@@ -3,13 +3,13 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
-exports.showForm = (req, resp) => {
+const showForm = (req, resp) => {
 
   resp.sendFile(path.join(__dirname, '../views/index.html'));
 }
 
 
-exports.postUser = (req, resp) => {
+const postUser = (req, resp) => {
   const userName = req.body.name;
   const userEmail = req.body.email;
   const userPassword = req.body.password;
@@ -51,7 +51,7 @@ const generateAccessToken = (id, ispremiumuser) => {
 
 
 
-exports.postUserLogin = async (req, resp) => {
+const postUserLogin = async (req, resp) => {
   const userEmail = req.body.LoginEmail;
   const userPassword = req.body.LoginPassword;
 
@@ -87,4 +87,11 @@ exports.postUserLogin = async (req, resp) => {
 };
 
 
+module.exports={
+  showForm,
+  postUser,
+  generateAccessToken,
+  postUserLogin
+  
 
+}
