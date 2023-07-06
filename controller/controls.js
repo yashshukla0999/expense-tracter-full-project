@@ -41,11 +41,10 @@ exports.postUser = (req, resp) => {
 }
 
 
-
-function generateAccessToken(id){
-  return jwt.sign({userId:id},'efvmrwkvmwemrwemrkmvwrgkbrwgblkrwbrklgmblkrwmbrkmb')
-
+const generateAccessToken = (id, ispremiumuser) => {
+  return jwt.sign({ userId : id,  ispremiumuser } ,'efvmrwkvmwemrwemrkmvwrgkbrwgblkrwbrklgmblkrwmbrkmb');
 }
+
 
 
 
@@ -77,7 +76,7 @@ exports.postUserLogin = async (req, resp) => {
       }
       if(result==true){
        
-      resp.status(200).json({ message: "User logged in successfully" ,token:generateAccessToken(user.id)});
+      resp.status(200).json({ message: "User logged in successfully" ,token:generateAccessToken(user.id,user.ispremiumuser)});
       
       }
     });

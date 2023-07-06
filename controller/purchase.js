@@ -3,11 +3,13 @@ const Order = require('../models/order')
 const userController = require('./controls')
 
 
-const purchasepremium =async (req, res) => {
+exports.purchasepremium =async (req, res) => {
+    console.log("INSIDE PURCHASE CONTROLLER premiumMember ");
+
     try {
         var rzp = new Razorpay({
-            key_id: 'rzp_test_gpC9n1pPyekriA',
-            key_secret: 'nFlJ9uw3sCr12xEIUUpqD4wF'
+            key_id: "rzp_test_aIWZUO5vl7iTsU",
+            key_secret: "wnaaIbXDapmamlqVWfLqBtyQ"
         })
         const amount = 2500;
 
@@ -28,30 +30,35 @@ const purchasepremium =async (req, res) => {
     }
 }
 
- const updateTransactionStatus = async (req, res ) => {
+exports.updateTransactionStatus = async (req, res ) => {
     try {
-        const userId = req.user.id;
-        const { payment_id, order_id} = req.body;
-        const order  = await Order.findOne({where : {orderid : order_id}}) //2
+        //const userId = req.user.id;
+        //const { payment_id, order_id} = req.body;
+        const order_id = req.body.order_id;
+    const payment_id = req.body.payment_id;
+        const order  = await Order.findOne({where : {orderid : order_id}}) 
         const promise1 =  order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}) 
         const promise2 =  req.user.update({ ispremiumuser: true }) 
-
+console.log(payment_id+'Zxcvfbghnjm,.')
         Promise.all([promise1, promise2]).then(()=> {
-            return res.status(202).json({sucess: true, message: "Transaction Successful", token: userController.generateAccessToken(userId,undefined , true) });
-        }).catch((error ) => {
-            throw new Error(error)
+            return res.status(200).json({sucess: true, message: "Transaction Successful"});
+        }).catch( async (error ) => {
+            console.log(error);
+            await order.update({  paymentid: payment_id,status: "FAILED" });
+            throw new Error(JSON.stringify(error));
         })
 
         
                 
     } catch (err) {
         console.log(err);
+        //await order.update({  paymentid: payment_id,status: "FAILED" });
         res.status(403).json({ errpr: err, message: 'Sometghing went wrong' })
 
     }
 }
 
-module.exports = {
-    purchasepremium,
-    updateTransactionStatus
-}
+// module.exports = {
+//     purchasepremium,
+//     updateTransactionStatus
+// }
