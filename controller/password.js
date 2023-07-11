@@ -20,7 +20,7 @@ exports.forgotpassword = async (req, res) => {
         const user = await User.findOne({where : { email }});
         if(user){
             const id = uuid.v4();
-            console.log(user+'asdfghjkl')
+            console.log("UUIID generated >>>>>>>>>>>>>>>>>>",id)
             user.createForgotpassword({ id , active: true })
                 .catch(err => {
                   console.log(err);
@@ -34,7 +34,7 @@ exports.forgotpassword = async (req, res) => {
                 from: 'anshul831904@gmail.com', // Change to your verified sender
                 subject: 'Password reset',
                 text: 'Click on below link to reset password',
-                html: `<a href="http://localhost:9000/forgot/${id}">Reset password</a>`,
+               // html: `<a href="http://localhost:9000/forgot/${id}">Reset password</a>`,
             }
 
             sgMail
@@ -61,3 +61,60 @@ exports.forgotpassword = async (req, res) => {
     }
 
 }
+
+// exports.resetPassword = async (req, res, next) => {
+//   try{
+//     const forgetPasswordId =  req.params.id;
+//     console.log("forgetPasswordId>>>>>>>>>>>>>>>",forgetPasswordId)
+//     const forgotPasswordRequest = await ForgetPassword.findOne({ where : { id:forgetPasswordId}})
+//     if(forgotPasswordRequest)
+//     {
+//       await ForgetPassword.update({ active: false},{where:{id:forgetPasswordId}});
+  
+//       const filePath = path.join(__dirname, '..', 'views', 'resetPassword', 'resetPassword.html');
+//       console.log('filePath>>>>>>>>>>>', filePath);
+//       fs.readFile(filePath, (err, data) => {
+//         if (err) {
+//           console.error(err);
+//           return res.status(500).send('Error loading file');
+//         }
+//         res.setHeader('Content-Type', 'text/html');
+//         res.status(200).send(data);
+//       });
+//       }
+//   }catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: error });
+//   }
+  
+//   }
+
+// exports.updatePassword = async(req,res,next) =>{
+//   try{
+//     const resetId = req.params.id;
+//     const password = req.body.passwordAdd;
+
+//     if(!req.params.id){
+//       res.status(400).json({message:"Reset Password ID missing"})
+//     }
+//     const forgotPasswordRequest =  await ForgetPassword.findOne({where:{id:resetId}})
+//     console.log("forgotPasswordRequest>>>>>>>>>>>>>>>>",forgotPasswordRequest)
+//     const userRequest = await User.findOne({where:{id:forgotPasswordRequest.userId}})
+//     console.log("userRequest>>>>>>>>>>>>>>>>>>>>",userRequest)
+//     if(userRequest){
+//       const saltRound = 10;
+//       bcrypt.hash(password,saltRound,async(error,hash) =>{
+//         if(error){
+//           console.log(error);
+//           throw new Error(error);
+//         }
+//     await User.update({password: hash},{where:{id:userRequest.id}})
+//     res.status(201).json({message: 'Successfuly update the new password'})})
+//     }
+//   }
+//   catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: error });
+//   }
+
+// }
