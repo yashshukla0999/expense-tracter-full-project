@@ -14,7 +14,7 @@ const getUserLeaderBoard = async (req, res) => {
                 }
             ],
             group:['user.id'],
-            order:[['totalExpenses', 'DESC']]
+            order:[['total_cost', 'DESC']]
 
         })
        console.log(JSON.stringify(leaderboardofusers+'xcvbnm,'))

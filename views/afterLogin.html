@@ -157,7 +157,7 @@
 
   <div class="container">
     <button id="rzp-button1" class="btn btn-block">Buy Premium</button>
-    <button onclick="download()" id="downloadexpense" class="btn btn-block">Download File</button>
+    <!-- <button onclick="download()" id="downloadexpense" class="btn btn-block">Download File</button> -->
     <div id='massage'></div>
     <ul id="print"></ul>
     <ul id="leaderBoard"></ul><br>
@@ -197,8 +197,7 @@
           console.log(err);
         })
 
-      // localStorage.setItem(mail,JSON.stringify(obj));
-      // show(obj);
+     
 
     }
     function parseJwt(token) {
@@ -229,6 +228,7 @@
       if (ispremiumuser) {
         premiumUserMessage();
         showLeaderBoard();
+        downloadExpense();
       }
       const page = 1
       const Items_Per_Page = localStorage.getItem('itemsPerPage') || 2;
@@ -250,17 +250,17 @@
             document.body.innerHTML + "<h3> Something Went Wrong </h3>";
           console.log(error);
         });
-    //   axios.get("http://localhost:9000/expense", { headers: { "Authorization": token } })
-    //   .then((response) => {
-    //      response.data.forEach((expense) => {
-    //       show(expense);
+      //   axios.get("http://localhost:9000/expense", { headers: { "Authorization": token } })
+      //   .then((response) => {
+      //      response.data.forEach((expense) => {
+      //       show(expense);
 
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
 
-    //   });
+      //   });
 
     })
 
@@ -316,25 +316,55 @@
 
 
     }
-    function download() {
-      axios.get('http://localhost:3000/download', { headers: { "Authorization": token } })
-        .then((response) => {
-          if (response.status === 201) {
-            //the bcakend is essentially sending a download link
-            //  which if we open in browser, the file would download
-            var a = document.createElement("a");
-            a.href = response.data.fileUrl;
-            a.download = 'myexpense.csv';
-            a.click();
-          } else {
-            throw new Error(response.data.message)
-          }
+    function downloadExpense() {
+  const downloadExpensebtn = document.createElement("button");
 
-        })
-        .catch((err) => {
-          showError(err)
-        });
-    }
+  downloadExpensebtn.className = "btn btn-success";
+  downloadExpensebtn.id = "downloadexpense";
+  downloadExpensebtn.innerHTML = "Download";
+
+  downloadExpensebtn.onclick = () => {
+    download();
+  };
+  document.body.appendChild(downloadExpensebtn);
+}
+async function download() {
+  try {
+    const token = localStorage.getItem("token");
+    const downloadInfo = await axios.get(
+      `http://localhost:9000/download`,
+      { headers: { Authorization: token } }
+    );
+    console.log(downloadInfo);
+    var a = document.createElement("a");
+    a.href = downloadInfo.data.fileUrl;
+    a.download = "myexpense.csv";
+    a.click();
+  } catch (error) {
+    console.log(error);
+    document.body.innerHTML =
+      document.body.innerHTML + "<h3> Something Went Wrong </h3>";
+  }
+}
+    // function download() {
+    //   axios.get('http://localhost:3000/download', { headers: { "Authorization": token } })
+    //     .then((response) => {
+    //       if (response.status === 201) {
+    //         //the bcakend is essentially sending a download link
+    //         //  which if we open in browser, the file would download
+    //         var a = document.createElement("a");
+    //         a.href = response.data.fileUrl;
+    //         a.download = 'myexpense.csv';
+    //         a.click();
+    //       } else {
+    //         throw new Error(response.data.message)
+    //       }
+
+    //     })
+    //     .catch((err) => {
+    //       showError(err)
+    //     });
+    // }
 
 
 
@@ -354,7 +384,7 @@
       const token = localStorage.getItem('token');
       console.log(token);
 
-      let rzpl = null; // Declare rzpl variable with a default value
+      let rzpl = null; 
 
       try {
         const response = await axios.get('http://localhost:9000/purchase', { headers: { Authorization: token } });
@@ -373,7 +403,7 @@
               premiumUserMessage();
               showLeaderBoard();
               localStorage.setItem("token", res.data.token);
-              //console.log('you are a premium member');
+              console.log('you are a premium member');
             } catch (error) {
               console.error(error);
               alert('An error occurred while processing your payment.');
@@ -382,7 +412,7 @@
           }
         };
 
-        rzpl = new Razorpay(options); // Assign the value of rzpl
+        rzpl = new Razorpay(options); 
         rzpl.open();
       } catch (error) {
         console.error(error);
@@ -471,7 +501,7 @@
           headers: { Authorization: token },
         })
         .then((response) => {
-        clearItems()
+          clearItems()
           const expenses = response.data.expenses;
 
           for (let i = 0; i < expenses.length; i++) {

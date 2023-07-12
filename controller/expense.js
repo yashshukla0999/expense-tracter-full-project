@@ -4,6 +4,10 @@ const { where } = require('sequelize');
 const jwt = require('jsonwebtoken')
 const User = require('../models/user');
 const sequelize = require('../util/database');
+const AWS = require('aws-sdk');
+const { response } = require('express');
+const { error } = require('console');
+
 
 
 
@@ -132,6 +136,94 @@ exports.getAllUsers = async (req, res, next) => {
     res.status(500).json({ error: error });
   }
 };
+
+exports.downloadExpense = async(req,resp)=>
+{
+  try{
+  const expenses = await req.user.getExpenses();
+ // console.log(expenses);
+  const stringify = JSON.stringify(expenses);
+  const userId = req.user.id;
+
+  const fileName =`expense${userId}/${new Date()}.txt`;
+  const fileUrl = await uploadToS3(stringify,fileName);
+  console.log(fileUrl+'zxc,xmzczxmcmzcmmxxcm')
+  resp.status(200).json({fileUrl,success:true})
+  }
+  catch{
+    console.log(error);
+    resp.status(500).json({fileUrl,success:false,error:error})
+  }
+}
+
+
+
+
+
+function uploadToS3(data,fileName){
+  const BUCKET_NAME ='expenseaws';
+  const IAM_USER_NAME='AKIAYJN4DFRBBUELRYTF';
+  const IAM_USER_SECRET ='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';
+
+  let s3bucket = new AWS.S3({
+    accessKeyId:IAM_USER_NAME,
+    secretAccessKey:IAM_USER_SECRET,
+  
+  })
+
+
+  var params ={
+    Bucket:BUCKET_NAME,
+    Key:fileName,
+    Body:data,
+    ACL:'public-read'
+  }
+console.log(params.Key+'asdfghjkl;')
+
+return new Promise((resolve,reject)=>{
+  s3bucket.upload(params,(err,response)=>{
+    if(err){
+      //console.log(params.Key)
+      console.log(err,'something went wrong')
+      reject(err);
+    }
+    else{
+     // console.log(params.Key)
+      console.log('success',response)
+      resolve (response.Location);
+    }
+  })
+
+
+})
+  
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // exports.editUser = (req, res) => {
 //   const userId = req.params.id;
 //   const { name, email, PhoneNumber } = req.body;
