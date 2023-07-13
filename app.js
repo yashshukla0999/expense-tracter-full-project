@@ -7,7 +7,8 @@ const sequelize = require('./util/database');
 const helmet  = require('helmet');
 const compression  = require('compression')
 const morgan =require('morgan')
-
+const dotenv = require('dotenv')
+dotenv.config()
 const User=require('./models/user')
 const Expense = require("./models/expense");
 const Order = require('./models/order');
