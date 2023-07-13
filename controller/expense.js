@@ -8,9 +8,9 @@ const AWS = require('aws-sdk');
 const { response } = require('express');
 const { error } = require('console');
 
-
-
-
+const DownloadUrl = require("../models/fileUrl")
+const dotenv = require('dotenv')
+dotenv.config()
 
 exports.showForm = (req, resp) => {
 
@@ -162,8 +162,8 @@ exports.downloadExpense = async(req,resp)=>
 
 function uploadToS3(data,fileName){
   const BUCKET_NAME ='expenseaws';
-  const IAM_USER_NAME='AKIAYJN4DFRBBUELRYTF';
-  const IAM_USER_SECRET ='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';
+  const IAM_USER_NAME=process.env.IAM_USER_NAME;
+  const IAM_USER_SECRET = process.env.IAM_USER_SECRET;
 
   let s3bucket = new AWS.S3({
     accessKeyId:IAM_USER_NAME,
@@ -199,7 +199,19 @@ return new Promise((resolve,reject)=>{
   
 
 }
+exports.downloadAllUrl = async(req,res,next) =>{
+  try{
+      const allURL = await DownloadUrl.findAll({where:{userID:req.user.id}})
+      console.log("allURL>>>>>>>>>>>>>>>>>>>>>",allURL)
+      res.status(200).json({allURL})
 
+  }catch (error) {
+      console.log(error);
+      res.status(500).json({error: error, success: false });
+
+  }
+
+}
 
 
 

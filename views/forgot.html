@@ -1,42 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Password</title>
+ 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    html,body { height: 100%; }
+
+body{
+	display: -ms-flexbox;
+	display: -webkit-box;
+	display: flex;
+	-ms-flex-align: center;
+	-ms-flex-pack: center;
+	-webkit-box-align: center;
+	align-items: center;
+	-webkit-box-pack: center;
+	justify-content: center;
+	background-color: #f5f5f5;
+}
+
+form{
+    /* margin-top: 20px !important; */
+	padding-top: 10px;
+	font-size: 13px;
+	margin-top: 30px;
+}
+
+.card-title{ font-weight:300; }
+
+.btn{
+	font-size: 13px;
+}
+
+.login-form{ 
+	width:320px;
+	margin:20px;
+}
+
+.sign-up{
+	text-align:center;
+	padding:20px 0 0;
+}
+
+span{
+	font-size:14px;
+}
+  </style>
 </head>
-
 <body>
-    <form onsubmit="forgotpassword(event)">
-        <input type="email" name="email" required>
-        <button> Send Mail</button>
-    </form>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <script>function forgotpassword(e) {
-            e.preventDefault();
-            console.log(e.target.name);
-            const form = new FormData(e.target);
+  
+<div class="card login-form">
+  <div class="card-body">
+      <h3 class="card-title text-center">Change password</h3>
 
-            const userDetails = {
-                email: form.get("email"),
+      <div class="card-text">
+          <form onsubmit="sendLink(event)">
+            <div class="form-group">
+              <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter your email" name="email">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Reset Password</button>
+            </div>
+              
+          </form>
+      </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+<script>
+    const token = localStorage.getItem('token')
+const tokentosend =  { headers: { Authorization: token } }
 
-            }
-            console.log(userDetails)
-            axios.post('http://localhost:9000/forgot', userDetails).then(response => {
-                if (response.status === 202) {
-                    document.body.innerHTML += '<div style="color:red;">Mail Successfuly sent <div>'
-                    window.location.href = "forgot.html";
-                } else {
-                    throw new Error('Something went wrong!!!')
+async function sendLink(e) {
+    try {
+        e.preventDefault()
+        const email = e.target.email.value
+
+        console.log(tokentosend)
+
+        const response = await axios.post('http://localhost:9000/forgot', { email }, tokentosend)
+            .then((res) => {
+                if (res.status === 200) {
+                    alert('reset password link has been shared to your email')
                 }
-            }).catch(err => {
-                console.log(err)
-                document.body.innerHTML += `<div style="color:red;">${err} <div>`;
             })
-        }</script>
-
-</body>
-
-</html>
+            .catch((error) => {
+                if (error.response.status === 404) {
+                    alert('email does not exist')
+                }
+            })
+    } catch (error) {
+        console.log(error)
+    }
+}
+</script>
